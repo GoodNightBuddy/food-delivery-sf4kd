@@ -8,23 +8,30 @@ Welcome to the Food Delivery Project! This project consists of two parts: FED (F
 
 > Project uses PostgreSQL as database. Assuming that PostgreSQL should be installed and **created individual database** for this app.
 
-> After creating signle PostgreSQL database, open *bed* folder and find **.env** file. Replace default values with your own. Make sure that password choosen appropriately(PosgreSQL have master password and database user password that is needed).
+> After creating signle PostgreSQL database, open _bed_ folder and find **.env** file. Replace default values with your own. Make sure that password choosen appropriately(PosgreSQL have master password and database user password that is needed).
 
-Download this repo to local machine, if it not done, and go to root directory.
-   ```
-   gh repo clone GoodNightBuddy/food-delivery-sf4kd
+Download this repo to local machine, if it not done:
+
+```
+gh repo clone GoodNightBuddy/food-delivery-sf4kd
+```
+Then go to root directory:
+```
    cd food-delivery-sf4kd
-   ```
-Or you can choose ZIP archive.   
+```
+
+Or you can choose ZIP archive).
 
 Next, follow these steps:
 
 1. Install dependencies for both FED and BED:
+
    ```
    npm run install:all
    ```
 
 2. Create the database configuration file:
+
    ```
    npm run create:dbconfig
    ```
@@ -37,16 +44,18 @@ Next, follow these steps:
 ## Usage
 
 Excecute the following command from root directory:
-   ```
-   npm run start:all
-   ```
-This will concurrently start the FED (Front-end) and BED (Back-end) servers. Client runs at *http://localhost:3000/* and server at *http://localhost:3001/*. Check if this ports are free.
 
-Or, you can use 2 terminals. Go and execute **npm run start** from *fed* folder and **npm run dev** from the *bed* folder.
+```
+npm run start:all
+```
+
+This will concurrently start the FED (Front-end) and BED (Back-end) servers. Client runs at _http://localhost:3000/_ and server at _http://localhost:3001/_. Check if this ports are free.
+
+Or, you can use 2 terminals. Go and execute **npm run start** from _fed_ folder and **npm run dev** from the _bed_ folder.
 
 # About
+
 Main technologies are: React, Redux, Chakra UI for client side and Express with PostgreSQL on the server. Both parts writed with Typescript.
 
 I good understand, that code structure and cleanliness leaves much to be desired. But I have only 3 days for this test task and it was done in a hurry. Redux or Firebase are installed just because I planned to give more fuctionality to this app, but met some problems, unfortunatelly.
 [Deploy](https://food-delivery-front-end.onrender.com)
-

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState} from 'react';
 import {
   Box,
   Flex,
@@ -95,42 +95,6 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
     );
   };
 
-  const handleIncrement = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      // Retrieve the productId from the parent element's dataset attribute
-      const productId = Number(
-        (event.target as HTMLDivElement).dataset.productId
-      );
-      setProducts(prevProducts =>
-        prevProducts.map(product =>
-          product.id === productId
-            ? { ...product, quantity: product.quantity + 1 }
-            : product
-        )
-      );
-    },
-    []
-  );
-
-  const handleDecrement = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      // Retrieve the productId from the parent element's dataset attribute
-      const productId = Number(
-        (event.target as HTMLDivElement).dataset.productId
-      );
-      setProducts(prevProducts =>
-        prevProducts.map(product =>
-          product.id === productId
-            ? { ...product, quantity: Math.max(product.quantity - 1, 1) }
-            : product
-        )
-      );
-    },
-    []
-  );
-
   if (loading) {
     return (
       <Flex flex={3} flexDirection="column">
@@ -179,11 +143,9 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper
-                  onClick={handleIncrement}
                   data-product-id={product.id} // Add the dataset attribute to store the productId
                 />
                 <NumberDecrementStepper
-                  onClick={handleDecrement}
                   data-product-id={product.id} // Add the dataset attribute to store the productId
                 />
               </NumberInputStepper>

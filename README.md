@@ -12,7 +12,8 @@ Welcome to the Food Delivery Project! This project consists of two parts: FED (F
 
 Download this repo to local machine, if it not done, and go to root directory.
    ```
-   gh repo clone GoodNightBuddy/food_delivery
+   gh repo clone GoodNightBuddy/food-delivery-sf4kd
+   cd food-delivery-sf4kd
    ```
 Or you can choose ZIP archive.   
 

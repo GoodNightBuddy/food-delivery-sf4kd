@@ -1,0 +1,191 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  Box,
+  Flex,
+  Image,
+  Text,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Skeleton,
+  IconButton,
+} from '@chakra-ui/react';
+import { useAppSelector } from '../../store/types/types';
+import axios from 'axios';
+import { API, getAPIEndpoint } from '../../enums/API';
+import { FaTrash } from 'react-icons/fa';
+
+interface ICartItem {
+  quantity: number;
+  product_id: number;
+  product_name: string;
+  price: string;
+  product_image_url: string;
+}
+
+interface IUpdateCartData {
+  quantity: number;
+  productId: number;
+  userId: number;
+}
+
+interface ICartProductListProps {
+  setTotalPrice: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const CartProductList: React.FC<ICartProductListProps> = ({
+  setTotalPrice,
+}) => {
+  const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const userId = useAppSelector(state => state.auth.userId);
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      setLoading(true);
+      if (userId) {
+        try {
+          const response = await axios.get(getAPIEndpoint(API.cart) + API.slash + userId);
+          setCartItems(response.data.cart);
+          setTotalPrice(response.data.total_price);
+        } catch (error) {
+          console.log('Error fetching cart items:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchCartItems();
+  }, [setTotalPrice, userId]);
+
+  const updateCart = useCallback(
+    async (data: IUpdateCartData) => {
+      setLoading(true);
+      if (userId) {
+        try {
+          const response = await axios.patch(getAPIEndpoint(API.cart), data);
+          setCartItems(response.data.cart);
+          setTotalPrice(response.data.total_price);
+        } catch (error) {
+          console.log('Error updating cart:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    },
+    [setTotalPrice, userId]
+  );
+
+  const handleIncrement = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const productId = Number(
+        (event.currentTarget as HTMLDivElement).dataset.productId
+      );
+      const quantity = cartItems.find(
+        item => item.product_id === productId
+      )?.quantity;
+
+      if (userId && quantity) {
+        updateCart({ productId, userId, quantity: quantity + 1 });
+      }
+    },
+    [cartItems, userId, updateCart]
+  );
+
+  const handleDecrement = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const productId = Number(
+        (event.currentTarget as HTMLDivElement).dataset.productId
+      );
+      const quantity = cartItems.find(
+        item => item.product_id === productId
+      )?.quantity;
+      if (userId && quantity && quantity !== 1) {
+        updateCart({ productId, quantity: quantity - 1, userId });
+      }
+    },
+    [cartItems, userId, updateCart]
+  );
+
+  const handleRemoveFromCart = async (productId: number) => {
+    if (userId) {
+      try {
+        const response = await axios.delete(getAPIEndpoint(API.cart), {
+          params: {
+            userId,
+            productId
+          }
+        });
+        setCartItems(response.data.cart);
+        setTotalPrice(response.data.total_price);
+      } catch (error) {
+        console.log('Error updating cart:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+  };
+
+  if (loading || !userId) {
+    return (
+      <Box flex={3}>
+        <Skeleton height="50px" my={2} />
+        <Skeleton height="50px" my={2} />
+        <Skeleton height="50px" my={2} />
+      </Box>
+    );
+  }
+
+  return (
+    <Box flex={3}>
+      {cartItems.map((item: ICartItem) => (
+        <Flex
+          key={item.product_id}
+          alignItems="center"
+          p={4}
+          borderBottom="1px solid gray"
+        >
+          <Image
+            src={item.product_image_url}
+            alt={item.product_name}
+            boxSize="50px"
+            mr={4}
+          />
+          <Box flex={1}>
+            <Text>{item.product_name}</Text>
+            <Text>${item.price}</Text>
+          </Box>
+          <Box flex={1}>
+            <NumberInput value={item.quantity} min={1}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper
+                  onClick={handleIncrement}
+                  data-product-id={item.product_id}
+                />
+                <NumberDecrementStepper
+                  onClick={handleDecrement}
+                  data-product-id={item.product_id}
+                />
+              </NumberInputStepper>
+            </NumberInput>
+          </Box>
+          <IconButton
+            icon={<FaTrash />}
+            aria-label="Remove from cart"
+            onClick={() => handleRemoveFromCart(item.product_id)}
+          />
+        </Flex>
+      ))}
+    </Box>
+  );
+};
+
+export default CartProductList;

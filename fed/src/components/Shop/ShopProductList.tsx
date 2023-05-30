@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -39,7 +39,7 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
   const [loading, setLoading] = useState(false);
   const userId = useAppSelector(state => state.auth.userId);
   const stateShopId = useAppSelector(state => state.shop.shopId);
-  const disabledBuying = !!stateShopId && shopId !== stateShopId
+  const disabledBuying = !!stateShopId && shopId !== stateShopId;
   const dispatch = useAppDispatch();
   const toast = useToast();
 
@@ -47,7 +47,9 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(getAPIEndpoint(API.shopProducts) + API.slash + shopId);
+        const response = await axios.get(
+          getAPIEndpoint(API.shopProducts) + API.slash + shopId
+        );
         setProducts(
           response.data.map((product: IProduct) => ({
             ...product,
@@ -80,17 +82,15 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
           status: 'success',
           duration: 1500,
           isClosable: true,
-          position: 'top'
+          position: 'top',
         });
         setProducts(prevProducts =>
           prevProducts.map(product =>
-            product.id === productId
-              ? { ...product, quantity: 1 }
-              : product
+            product.id === productId ? { ...product, quantity: 1 } : product
           )
         );
 
-        if(!stateShopId) {
+        if (!stateShopId) {
           dispatch(shopActionCreator.setShop(selectedProduct.shop_id));
         }
       }
@@ -127,14 +127,15 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
 
   return (
     <Box flex={3}>
-      {disabledBuying &&
-      <Alert status="warning" mb={4}>
+      {disabledBuying && (
+        <Alert status="warning" mb={4}>
           <AlertIcon />
           <AlertDescription>
             You can buy products only from one shop. To buy these products, you
             should remove products from another shop from your cart.
           </AlertDescription>
-        </Alert>}
+        </Alert>
+      )}
       {products.map(product => (
         <Flex
           key={product.id}
@@ -162,12 +163,8 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
             >
               <NumberInputField />
               <NumberInputStepper>
-                <NumberIncrementStepper
-                  data-product-id={product.id} // Add the dataset attribute to store the productId
-                />
-                <NumberDecrementStepper
-                  data-product-id={product.id} // Add the dataset attribute to store the productId
-                />
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
           </Box>

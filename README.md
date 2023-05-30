@@ -55,6 +55,8 @@ Or, you can use 2 terminals. Go and execute **npm run start** from _fed_ folder 
 
 # About
 
+You can buy products only from one shop. To buy products from another shop, you should remove previous shop products from cart. It was additional task requirement.
+
 Main technologies are: React, Redux, Chakra UI for client side and Express with PostgreSQL on the server. Both parts writed with Typescript.
 
 I good understand, that code structure and cleanliness leaves much to be desired. But I have only 3 days for this test task and it was done in a hurry. Redux or Firebase are installed just because I planned to give more fuctionality to this app, but met some problems, unfortunatelly.

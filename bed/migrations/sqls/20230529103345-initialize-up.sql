@@ -84,7 +84,6 @@ VALUES
   -- Burger King products
   (4, 4.99, 'Cream Soup', 'https://e7.pngegg.com/pngimages/283/0/png-clipart-broth-cheese-soup-iranian-cuisine-cafe-chicken-soup-soups-cream-soup.png'),
   (4, 2.99, 'Steak', 'https://w7.pngwing.com/pngs/994/579/png-transparent-grilled-steak-delmonico-steak-beefsteak-chophouse-restaurant-strip-steak-beef-steak-beef-roast-beef-cooking-thumbnail.png'),
-  (4, 5.99, 'Cotton Candy', 'https://png.pngtree.com/png-clipart/20201028/ourmid/pngtree-pink-cartoon-cotton-candy-png-image_2377475.jpg'),
   (4, 3.99, 'Donuts', 'https://w7.pngwing.com/pngs/501/669/png-transparent-donut-thumbnail.png'),
   (4, 4.99, 'Coca-Cola', 'https://imgpng.ru/d/cocacola_PNG15.png'),
   (4, 3.99, 'Ice Cream', 'https://w7.pngwing.com/pngs/586/1024/png-transparent-ice-cream-cones-sorbet-gelato-neapolitan-ice-cream-ice-cream.png'),

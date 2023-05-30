@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from 'react-router';
 import Layout from './components/hoc/Layout';
 import Shop from './components/Shop/ShopPage';
 import { useAppDispatch, useAppSelector } from './store/types/types';
-import { authActionCreator } from './store/action';
+import { authActionCreator, shopActionCreator } from './store/action';
 import CartPage from './components/Cart/CartPage';
 import Orders from './components/Orders/Orders';
 import {
@@ -25,6 +25,12 @@ export const App = () => {
   const isLoading = useAppSelector(state => state.auth.loading);
   const userId = useAppSelector(state => state.auth.userId);
 
+  useEffect(() => {
+    if(userId) {
+      dispatch(shopActionCreator.initShop(userId));
+    }
+  }, [dispatch, userId]);
+
   if (isLoading) {
     return (
       <Box
@@ -41,7 +47,7 @@ export const App = () => {
           color="blue.500"
           size="xl"
         />
-        <Text maxW={"75%"} align={'center'}>Services, that host this app is free, so it may need time for launching. Please, try to reload the page and wait a few seconds. Thanks:)</Text>
+        <Text maxW={"75%"} align={'center'}>Services, that host this app are free, so it may need time for launching. Please, try to reload the page and wait up to ~30 seconds. Thanks:)</Text>
       </Box>
     );
   }

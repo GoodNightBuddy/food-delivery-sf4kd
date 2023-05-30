@@ -68,7 +68,7 @@ class PurchaseController {
 
   private getUpdatedCartData = async (cartId: number): Promise<CartData> => {
     const cartDataQuery: QueryResult<CartItem> = await db.query(`
-      SELECT ci.quantity, p.id AS product_id, p.product_name, p.price, p.product_image_url
+      SELECT ci.quantity, p.id AS product_id, p.product_name, p.price, p.product_image_url, p.shop_id
       FROM cart_items AS ci
       JOIN products AS p ON ci.product_id = p.id
       WHERE ci.cart_id = $1

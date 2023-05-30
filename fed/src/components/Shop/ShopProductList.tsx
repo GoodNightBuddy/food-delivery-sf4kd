@@ -12,14 +12,18 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   useToast,
+  Alert,
+  AlertDescription,
+  AlertIcon,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API, getAPIEndpoint } from '../../enums/API';
-import { useAppSelector } from '../../store/types/types';
+import { useAppDispatch, useAppSelector } from '../../store/types/types';
+import { shopActionCreator } from '../../store/action';
 
 interface IProduct {
   id: number;
-  shopId: number;
+  shop_id: number;
   product_name: string;
   price: string;
   product_image_url: string;
@@ -34,6 +38,9 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const userId = useAppSelector(state => state.auth.userId);
+  const stateShopId = useAppSelector(state => state.shop.shopId);
+  const disabledBuying = !!stateShopId && shopId !== stateShopId
+  const dispatch = useAppDispatch();
   const toast = useToast();
 
   useEffect(() => {
@@ -59,6 +66,7 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
 
   const handleAddToCart = async (productId: number, quantity: number) => {
     const selectedProduct = products.find(product => product.id === productId);
+
     if (selectedProduct) {
       const data = {
         productId,
@@ -81,6 +89,10 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
               : product
           )
         );
+
+        if(!stateShopId) {
+          dispatch(shopActionCreator.setShop(selectedProduct.shop_id));
+        }
       }
     }
   };
@@ -115,6 +127,14 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
 
   return (
     <Box flex={3}>
+      {disabledBuying &&
+      <Alert status="warning" mb={4}>
+          <AlertIcon />
+          <AlertDescription>
+            You can buy products only from one shop. To buy these products, you
+            should remove products from another shop from your cart.
+          </AlertDescription>
+        </Alert>}
       {products.map(product => (
         <Flex
           key={product.id}
@@ -156,6 +176,7 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
             size="sm"
             ml={4}
             onClick={() => handleAddToCart(product.id, product.quantity)}
+            isDisabled={disabledBuying}
           >
             Add to Cart
           </Button>

@@ -12,10 +12,11 @@ import {
   Skeleton,
   IconButton,
 } from '@chakra-ui/react';
-import { useAppSelector } from '../../store/types/types';
+import { useAppDispatch, useAppSelector } from '../../store/types/types';
 import axios from 'axios';
 import { API, getAPIEndpoint } from '../../enums/API';
 import { FaTrash } from 'react-icons/fa';
+import { shopActionCreator } from '../../store/action';
 
 interface ICartItem {
   quantity: number;
@@ -23,6 +24,7 @@ interface ICartItem {
   product_name: string;
   price: string;
   product_image_url: string;
+  shop_id: number;
 }
 
 interface IUpdateCartData {
@@ -40,7 +42,8 @@ const CartProductList: React.FC<ICartProductListProps> = ({
 }) => {
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useAppDispatch();
+  const stateShopId = useAppSelector(state => state.shop.shopId);
   const userId = useAppSelector(state => state.auth.userId);
 
   useEffect(() => {
@@ -48,7 +51,9 @@ const CartProductList: React.FC<ICartProductListProps> = ({
       setLoading(true);
       if (userId) {
         try {
-          const response = await axios.get(getAPIEndpoint(API.cart) + API.slash + userId);
+          const response = await axios.get(
+            getAPIEndpoint(API.cart) + API.slash + userId
+          );
           setCartItems(response.data.cart);
           setTotalPrice(response.data.total_price);
         } catch (error) {
@@ -119,21 +124,24 @@ const CartProductList: React.FC<ICartProductListProps> = ({
         const response = await axios.delete(getAPIEndpoint(API.cart), {
           params: {
             userId,
-            productId
-          }
+            productId,
+          },
         });
         setCartItems(response.data.cart);
         setTotalPrice(response.data.total_price);
+        // Set to null if there is no products in cart
+        if (stateShopId !== null && response.data.cart.length === 0) {
+          dispatch(shopActionCreator.setShop(null));
+        }
       } catch (error) {
         console.log('Error updating cart:', error);
       } finally {
         setLoading(false);
       }
     }
-    
   };
 
-  if (loading || !userId) {
+  if (loading) {
     return (
       <Box flex={3}>
         <Skeleton height="50px" my={2} />

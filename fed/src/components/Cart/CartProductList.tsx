@@ -11,6 +11,8 @@ import {
   NumberDecrementStepper,
   Skeleton,
   IconButton,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react';
 import { useAppDispatch, useAppSelector } from '../../store/types/types';
 import axios from 'axios';
@@ -40,10 +42,14 @@ const CartProductList: React.FC = () => {
   const dispatch = useAppDispatch();
   const stateShopId = useAppSelector(state => state.shop.shopId);
   const userId = useAppSelector(state => state.auth.userId);
+  const [showSkeletons, setShowSkeletons] = useState(false);
 
   useEffect(() => {
+    let debounceTimer: NodeJS.Timeout;
+
     const fetchCartItems = async () => {
       setLoading(true);
+      clearTimeout(debounceTimer);
       if (userId) {
         try {
           const response = await axios.get(
@@ -54,12 +60,18 @@ const CartProductList: React.FC = () => {
         } catch (error) {
           console.log('Error fetching cart items:', error);
         } finally {
-          setLoading(false);
+          debounceTimer = setTimeout(() => {
+            setLoading(false);
+          }, 300);
         }
       }
     };
 
     fetchCartItems();
+
+    return () => {
+      clearTimeout(debounceTimer);
+    };
   }, [setTotalPrice, userId]);
 
   const updateCart = useCallback(
@@ -136,61 +148,84 @@ const CartProductList: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box flex={3}>
-        <Skeleton height="50px" my={2} />
-        <Skeleton height="50px" my={2} />
-        <Skeleton height="50px" my={2} />
-      </Box>
-    );
-  }
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        setShowSkeletons(true);
+      }, 300);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    } else {
+      setShowSkeletons(false);
+    }
+  }, [loading]);
 
   return (
     <Box flex={3}>
-      {cartItems.map((item: ICartItem) => (
-        <Flex
-          key={item.product_id}
-          alignItems="center"
-          p={4}
-          borderBottom="1px solid gray"
-        >
-          <Image
-            src={item.product_image_url}
-            alt={item.product_name}
-            boxSize="50px"
-            mr={4}
-          />
-          <Box flex={1}>
-            <Text>{item.product_name}</Text>
-            <Text>${item.price}</Text>
-          </Box>
-          <Box flex={1}>
-            <NumberInput value={item.quantity} min={1}>
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper
-                  onClick={handleIncrement}
-                  data-product-id={item.product_id}
-                />
-                <NumberDecrementStepper
-                  onClick={handleDecrement}
-                  data-product-id={item.product_id}
-                />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
-          <IconButton
-            icon={<FaTrash />}
-            aria-label="Remove from cart"
-            onClick={() => handleRemoveFromCart(item.product_id)}
-            ml={2}
-          />
+      {showSkeletons && (
+        <>
+          <Skeleton height="50px" my={2} />
+          <Skeleton height="50px" my={2} />
+          <Skeleton height="50px" my={2} />
+        </>
+      )}
+
+      {!showSkeletons && cartItems.length === 0 && (
+        <Alert status="info">
+          <AlertIcon />
+          Your shopping cart is empty
+        </Alert>
+      )}
+
+      {!showSkeletons &&
+        cartItems.map((item: ICartItem) => (
+          <Flex
+            key={item.product_id}
+            alignItems="center"
+            p={4}
+            borderBottom="1px solid gray"
+          >
+            <Image
+              src={item.product_image_url}
+              alt={item.product_name}
+              boxSize="50px"
+              mr={4}
+            />
+            <Box flex={1}>
+              <Text>{item.product_name}</Text>
+              <Text>${item.price}</Text>
+            </Box>
+            <Box flex={1}>
+              <NumberInput value={item.quantity} min={1}>
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper
+                    onClick={handleIncrement}
+                    data-product-id={item.product_id}
+                  />
+                  <NumberDecrementStepper
+                    onClick={handleDecrement}
+                    data-product-id={item.product_id}
+                  />
+                </NumberInputStepper>
+              </NumberInput>
+            </Box>
+            <IconButton
+              icon={<FaTrash />}
+              aria-label="Remove from cart"
+              onClick={() => handleRemoveFromCart(item.product_id)}
+              ml={2}
+            />
+          </Flex>
+        ))}
+
+      {!showSkeletons && stateShopId && (
+        <Flex justifyContent="space-between" alignItems="end" mt={4}>
+          <Text>Total Price: ${totalPrice.toFixed(2)}</Text>
         </Flex>
-      ))}
-      <Flex justifyContent="space-between" alignItems="end" mt={4}>
-        <Text>Total Price: ${totalPrice.toFixed(2)}</Text>
-      </Flex>
+      )}
     </Box>
   );
 };

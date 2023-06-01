@@ -14,6 +14,7 @@ import { API, getAPIEndpoint } from '../../enums/API';
 import CartProductList from './CartProductList';
 import { useAppDispatch, useAppSelector } from '../../store/types/types';
 import { shopActionCreator } from '../../store/action';
+import { validateAddress, validateName, validatePhone, validateEmail } from '../../utils/validation';
 
 const CartPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -34,23 +35,17 @@ const CartPage: React.FC = () => {
 
   const validateForm = () => {
     const { name, email, number, address } = formData;
-
-    setAddressValid(address.trim() !== '');
-    setNameValid(name.trim() !== '');
-    setPhoneValid(
-      /^(\+?\d{1,3}[-.\s]?)?(\(\d{1,3}\)|\d{1,3})[-.\s]?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})$/.test(
-        number
-      )
-    );
-    setEmailValid(/\S+@\S+\.\S+/.test(email));
-
+  
+    setAddressValid(validateAddress(address));
+    setNameValid(validateName(name));
+    setPhoneValid(validatePhone(number));
+    setEmailValid(validateEmail(email));
+  
     return (
-      address.trim() !== '' &&
-      name.trim() !== '' &&
-      /^(\+?\d{1,3}[-.\s]?)?(\(\d{1,3}\)|\d{1,3})[-.\s]?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})$/.test(
-        number
-      ) &&
-      /\S+@\S+\.\S+/.test(email)
+      validateAddress(address) &&
+      validateName(name) &&
+      validatePhone(number) &&
+      validateEmail(email)
     );
   };
 

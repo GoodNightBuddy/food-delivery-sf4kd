@@ -47,7 +47,7 @@ export const App = () => {
           color="blue.500"
           size="xl"
         />
-        <Text maxW={"75%"} align={'center'}>Services, that host this app are free, so it may need time for launching. Please, try to reload the page and wait up to ~30 seconds. Thanks:)</Text>
+        <Text maxW={"75%"} align={'center'}>Services, that host this app are free, so it may need time for launching. Please, try to reload the page and wait up to ~40 seconds. Thanks:)</Text>
       </Box>
     );
   }

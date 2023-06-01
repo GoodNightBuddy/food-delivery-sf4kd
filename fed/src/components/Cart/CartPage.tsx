@@ -75,7 +75,6 @@ const CartPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
-    validateForm()
   };
 
   if (loading) {

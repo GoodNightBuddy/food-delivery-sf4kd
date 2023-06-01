@@ -33,14 +33,9 @@ interface IUpdateCartData {
   userId: number;
 }
 
-interface ICartProductListProps {
-  setTotalPrice: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const CartProductList: React.FC<ICartProductListProps> = ({
-  setTotalPrice,
-}) => {
+const CartProductList: React.FC = () => {
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const stateShopId = useAppSelector(state => state.shop.shopId);
@@ -189,9 +184,13 @@ const CartProductList: React.FC<ICartProductListProps> = ({
             icon={<FaTrash />}
             aria-label="Remove from cart"
             onClick={() => handleRemoveFromCart(item.product_id)}
+            ml={2}
           />
         </Flex>
       ))}
+      <Flex justifyContent="space-between" alignItems="end" mt={4}>
+        <Text>Total Price: ${totalPrice.toFixed(2)}</Text>
+      </Flex>
     </Box>
   );
 };

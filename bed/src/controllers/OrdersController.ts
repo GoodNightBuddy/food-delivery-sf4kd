@@ -34,15 +34,15 @@ class OrdersController {
 
   public submitOrder: RequestHandler = async (req, res) => {
     try {
-      const { userId } = req.body;
+      const { contact_name, contact_email, contact_phone, shipping_address, userId } = req.body;
 
       // Start a transaction
       await db.query('BEGIN');
 
       // Insert the order
       const orderQuery: QueryResult<Order> = await db.query(
-        'INSERT INTO orders (user_id, total_price) VALUES ($1, 0) RETURNING id, order_date',
-        [userId]
+        'INSERT INTO orders (user_id, contact_name, contact_email, contact_phone, shipping_address, total_price) VALUES ($1, $2, $3, $4, $5, 0) RETURNING id, order_date',
+        [userId, contact_name, contact_email, contact_phone, shipping_address]
       );
 
       const orderId: number = orderQuery.rows[0].id;

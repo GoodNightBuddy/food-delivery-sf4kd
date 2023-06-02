@@ -42,6 +42,15 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
   const disabledBuying = !!stateShopId && shopId !== stateShopId;
   const dispatch = useAppDispatch();
   const toast = useToast();
+  const showToast = () => {
+    toast({
+      title: 'Product added to cart',
+      status: 'success',
+      duration: 1000,
+      isClosable: true,
+      position: 'top',
+    });
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -68,34 +77,34 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
 
   const handleAddToCart = async (productId: number, quantity: number) => {
     const selectedProduct = products.find(product => product.id === productId);
-
+  
     if (selectedProduct) {
       const data = {
         productId,
         quantity,
         userId,
       };
-      const response = await axios.put(getAPIEndpoint(API.cart), data);
-      if (response.data.cart) {
-        toast({
-          title: 'Product added to cart',
-          status: 'success',
-          duration: 1500,
-          isClosable: true,
-          position: 'top',
-        });
-        setProducts(prevProducts =>
-          prevProducts.map(product =>
-            product.id === productId ? { ...product, quantity: 1 } : product
-          )
-        );
-
-        if (!stateShopId) {
-          dispatch(shopActionCreator.setShop(selectedProduct.shop_id));
+  
+      try {
+        const response = await axios.put(getAPIEndpoint(API.cart), data);
+        if (response.data.cart) {
+          showToast();
+          setProducts(prevProducts =>
+            prevProducts.map(product =>
+              product.id === productId ? { ...product, quantity: 1 } : product
+            )
+          );
+  
+          // Set shop state for the first adding to cart
+          if (!stateShopId) {
+            dispatch(shopActionCreator.setShop(selectedProduct.shop_id));
+          }
         }
+      } catch (error) {
+        console.log('Error adding to cart:', error);
       }
     }
-  };
+  };  
 
   const handleQuantityChange = (productId: number, quantity: number) => {
     setProducts(prevProducts =>

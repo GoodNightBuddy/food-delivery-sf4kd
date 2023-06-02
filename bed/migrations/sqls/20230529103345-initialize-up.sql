@@ -34,7 +34,11 @@ CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
   order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  total_price NUMERIC(10, 2) NOT NULL
+  total_price NUMERIC(10, 2) NOT NULL,
+  contact_name VARCHAR(200) NOT NULL,
+  contact_email VARCHAR(200) NOT NULL,
+  contact_phone VARCHAR(20) NOT NULL,
+  shipping_address VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE order_items (

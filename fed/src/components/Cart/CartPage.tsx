@@ -8,6 +8,7 @@ import {
   Input,
   FormErrorMessage,
   Skeleton,
+  useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API, getAPIEndpoint } from '../../enums/API';
@@ -24,10 +25,10 @@ import {
 const CartPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    number: '',
-    address: '',
+    contact_name: '',
+    contact_email: '',
+    contact_phone: '',
+    shipping_address: '',
   });
   const [isEmailValid, setEmailValid] = useState(true);
   const [isPhoneValid, setPhoneValid] = useState(true);
@@ -37,20 +38,31 @@ const CartPage: React.FC = () => {
   const userId = useAppSelector(state => state.auth.userId);
   const shopId = useAppSelector(state => state.shop.shopId);
   const dispatch = useAppDispatch();
+  const toast = useToast();
+  const showToast = () => {
+    toast({
+      title: 'Order successfully submited!',
+      status: 'success',
+      duration: 1500,
+      isClosable: true,
+      position: 'top',
+    });
+  };
 
   const validateForm = () => {
-    const { name, email, number, address } = formData;
+    const { contact_name, contact_email, contact_phone, shipping_address } =
+      formData;
 
-    setAddressValid(validateAddress(address));
-    setNameValid(validateName(name));
-    setPhoneValid(validatePhone(number));
-    setEmailValid(validateEmail(email));
+    setAddressValid(validateAddress(shipping_address));
+    setNameValid(validateName(contact_name));
+    setPhoneValid(validatePhone(contact_phone));
+    setEmailValid(validateEmail(contact_email));
 
     return (
-      validateAddress(address) &&
-      validateName(name) &&
-      validatePhone(number) &&
-      validateEmail(email)
+      validateAddress(shipping_address) &&
+      validateName(contact_name) &&
+      validatePhone(contact_phone) &&
+      validateEmail(contact_email)
     );
   };
 
@@ -60,19 +72,28 @@ const CartPage: React.FC = () => {
     }
 
     try {
+      const { contact_name, contact_email, contact_phone, shipping_address } =
+        formData;
       setLoading(true);
-      await axios.post(getAPIEndpoint(API.orders), { userId });
+      await axios.post(getAPIEndpoint(API.orders), {
+        contact_name,
+        contact_email,
+        contact_phone,
+        shipping_address,
+        userId,
+      });
       dispatch(shopActionCreator.setShop(null));
-      setLoading(false);
       setFormData({
-        name: '',
-        email: '',
-        number: '',
-        address: '',
-      })
+        contact_name: '',
+        contact_email: '',
+        contact_phone: '',
+        shipping_address: '',
+      });
+      showToast();
     } catch (error) {
-      setLoading(false);
       console.log('Error submitting order:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,11 +119,11 @@ const CartPage: React.FC = () => {
         <Box flex={1} mr={4}>
           <form>
             <FormControl isRequired isInvalid={!isNameValid}>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Contact name</FormLabel>
               <Input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="contact_name"
+                value={formData.contact_name}
                 onChange={handleInputChange}
               />
               <Box h={4} pt={1} mb={2}>
@@ -112,11 +133,11 @@ const CartPage: React.FC = () => {
               </Box>
             </FormControl>
             <FormControl isRequired isInvalid={!isEmailValid}>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Contact email</FormLabel>
               <Input
                 type="email"
-                name="email"
-                value={formData.email}
+                name="contact_email"
+                value={formData.contact_email}
                 onChange={handleInputChange}
               />
               <Box h={4} pt={1} mb={2}>
@@ -126,11 +147,11 @@ const CartPage: React.FC = () => {
               </Box>
             </FormControl>
             <FormControl isRequired isInvalid={!isPhoneValid}>
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel>Contact phone number</FormLabel>
               <Input
                 type="tel"
-                name="number"
-                value={formData.number}
+                name="contact_phone"
+                value={formData.contact_phone}
                 onChange={handleInputChange}
               />
               <Box h={4} pt={1} mb={2}>
@@ -140,11 +161,11 @@ const CartPage: React.FC = () => {
               </Box>
             </FormControl>
             <FormControl isRequired isInvalid={!isAddressValid}>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>Shipping address</FormLabel>
               <Input
                 type="text"
-                name="address"
-                value={formData.address}
+                name="shipping_address"
+                value={formData.shipping_address}
                 onChange={handleInputChange}
               />
               <Box h={4} pt={1} mb={2}>

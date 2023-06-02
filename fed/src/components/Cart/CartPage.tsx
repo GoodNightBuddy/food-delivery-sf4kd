@@ -21,6 +21,7 @@ import {
   validatePhone,
   validateEmail,
 } from '../../utils/validation';
+import MapSearch from '../Map/MapSearch';
 
 const CartPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -116,7 +117,7 @@ const CartPage: React.FC = () => {
   return (
     <Box>
       <Flex>
-        <Box flex={1} mr={4}>
+        <Box flex={4} mr={4}>
           <form>
             <FormControl isRequired isInvalid={!isNameValid}>
               <FormLabel>Contact name</FormLabel>
@@ -185,8 +186,14 @@ const CartPage: React.FC = () => {
               Submit Order
             </Button>
           </form>
+          <Box mt={4}>
+            <MapSearch />
+            {/* <Map center={{lat: 44, lng:-80}} zoom={10}/> */}
+          </Box>
         </Box>
-        <CartProductList />
+        <Box flex={3}>
+          <CartProductList />
+        </Box>
       </Flex>
     </Box>
   );

@@ -1,8 +1,8 @@
 import express, { Router } from 'express';
-import PurchaseController from '../controllers/purchaseController';
+import CartController from '../controllers/CartController';
 
 const router: Router = express.Router();
-const controller: PurchaseController = new PurchaseController();
+const controller: CartController = new CartController();
 
 router.get('/cart/:userId', controller.getCart);
 
@@ -14,11 +14,5 @@ router.patch('/cart', controller.updateCartItemQuantity);
 
 // Route: Delte product to cart and get cart data with total price and product data
 router.delete('/cart', controller.removeFromCart);
-
-const purchaseController = new PurchaseController();
-router.get('/orders/:userId', purchaseController.getOrders);
-
-// Route: Submit order and convert cart to an order
-router.post('/orders', controller.submitOrder);
 
 export default router;

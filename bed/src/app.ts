@@ -1,6 +1,7 @@
 import { json } from 'body-parser';
 import express, { Request, Response, NextFunction } from 'express';
-import purchaseRoutes from './routes/purchaseRoutes';
+import cartRoutes from './routes/cartRoutes';
+import ordersRoutes from './routes/ordersRoutes';
 import productRoutes from './routes/productRoutes';
 import userRoutes from './routes/userRoutes';
 import cors from 'cors';
@@ -17,7 +18,8 @@ app.use(json());
 
 app.use(cors(corsOptions));
 
-app.use('/', purchaseRoutes);
+app.use('/', cartRoutes);
+app.use('/', ordersRoutes);
 app.use('/', userRoutes);
 app.use('/', productRoutes);
 

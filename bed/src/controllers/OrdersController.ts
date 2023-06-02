@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { QueryResult } from 'pg';
 import db from '../db/dbConfig';
-import { CartItem } from './CartController';
+import { CartItem } from './cartController';
 
 interface Order {
   order_id: number;

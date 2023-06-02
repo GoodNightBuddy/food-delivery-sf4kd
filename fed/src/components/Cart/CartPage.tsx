@@ -14,7 +14,12 @@ import { API, getAPIEndpoint } from '../../enums/API';
 import CartProductList from './CartProductList';
 import { useAppDispatch, useAppSelector } from '../../store/types/types';
 import { shopActionCreator } from '../../store/action';
-import { validateAddress, validateName, validatePhone, validateEmail } from '../../utils/validation';
+import {
+  validateAddress,
+  validateName,
+  validatePhone,
+  validateEmail,
+} from '../../utils/validation';
 
 const CartPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -35,12 +40,12 @@ const CartPage: React.FC = () => {
 
   const validateForm = () => {
     const { name, email, number, address } = formData;
-  
+
     setAddressValid(validateAddress(address));
     setNameValid(validateName(name));
     setPhoneValid(validatePhone(number));
     setEmailValid(validateEmail(email));
-  
+
     return (
       validateAddress(address) &&
       validateName(name) &&
@@ -54,16 +59,20 @@ const CartPage: React.FC = () => {
       return;
     }
 
-    if (userId) {
-      try {
-        setLoading(true);
-        await axios.post(getAPIEndpoint(API.orders), { userId });
-        dispatch(shopActionCreator.setShop(null));
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.log('Error submitting order:', error);
-      }
+    try {
+      setLoading(true);
+      await axios.post(getAPIEndpoint(API.orders), { userId });
+      dispatch(shopActionCreator.setShop(null));
+      setLoading(false);
+      setFormData({
+        name: '',
+        email: '',
+        number: '',
+        address: '',
+      })
+    } catch (error) {
+      setLoading(false);
+      console.log('Error submitting order:', error);
     }
   };
 

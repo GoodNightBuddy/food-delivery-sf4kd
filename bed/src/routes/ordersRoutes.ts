@@ -4,6 +4,7 @@ import OrdersController from '../controllers/OrdersController';
 const router: Router = express.Router();
 const controller: OrdersController = new OrdersController();
 
+// Route: Get all user orders
 router.get('/orders/:userId', controller.getOrders);
 
 // Route: Submit order and convert cart to an order

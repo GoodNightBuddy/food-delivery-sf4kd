@@ -45,51 +45,37 @@ const CartProductList: React.FC = () => {
   const [showSkeletons, setShowSkeletons] = useState(false);
 
   useEffect(() => {
-    let debounceTimer: NodeJS.Timeout;
-
     const fetchCartItems = async () => {
-      setLoading(true);
-      clearTimeout(debounceTimer);
-      if (userId) {
-        try {
-          const response = await axios.get(
-            getAPIEndpoint(API.cart) + API.slash + userId
-          );
-          setCartItems(response.data.cart);
-          setTotalPrice(response.data.total_price);
-        } catch (error) {
-          console.log('Error fetching cart items:', error);
-        } finally {
-          debounceTimer = setTimeout(() => {
-            setLoading(false);
-          }, 300);
-        }
+      try {
+        const response = await axios.get(
+          getAPIEndpoint(API.cart) + API.slash + userId
+        );
+        setCartItems(response.data.cart);
+        setTotalPrice(response.data.total_price);
+      } catch (error) {
+        console.log('Error fetching cart items:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCartItems();
-
-    return () => {
-      clearTimeout(debounceTimer);
-    };
   }, [setTotalPrice, userId]);
 
   const updateCart = useCallback(
     async (data: IUpdateCartData) => {
       setLoading(true);
-      if (userId) {
-        try {
-          const response = await axios.patch(getAPIEndpoint(API.cart), data);
-          setCartItems(response.data.cart);
-          setTotalPrice(response.data.total_price);
-        } catch (error) {
-          console.log('Error updating cart:', error);
-        } finally {
-          setLoading(false);
-        }
+      try {
+        const response = await axios.patch(getAPIEndpoint(API.cart), data);
+        setCartItems(response.data.cart);
+        setTotalPrice(response.data.total_price);
+      } catch (error) {
+        console.log('Error updating cart:', error);
+      } finally {
+        setLoading(false);
       }
     },
-    [setTotalPrice, userId]
+    [setTotalPrice]
   );
 
   const handleIncrement = useCallback(
@@ -126,7 +112,6 @@ const CartProductList: React.FC = () => {
   );
 
   const handleRemoveFromCart = async (productId: number) => {
-    if (userId) {
       try {
         const response = await axios.delete(getAPIEndpoint(API.cart), {
           params: {
@@ -145,7 +130,6 @@ const CartProductList: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    }
   };
 
   useEffect(() => {

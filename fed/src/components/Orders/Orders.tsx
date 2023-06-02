@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Flex,
-  Image,
-  Text,
-  Skeleton,
-} from '@chakra-ui/react';
+import { Box, Flex, Image, Text, Skeleton } from '@chakra-ui/react';
 import axios from 'axios';
 import { API, getAPIEndpoint } from '../../enums/API';
 import { useAppSelector } from '../../store/types/types';
@@ -24,19 +18,19 @@ interface IOrderItem {
   total_price: number;
 }
 
-
-const Orders: React.FC = ( ) => {
+const Orders: React.FC = () => {
   const [orders, setOrders] = useState<IOrderItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   const userId = useAppSelector(state => state.auth.userId);
 
-
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
-      if (userId) try {
-        const response = await axios.get(getAPIEndpoint(API.orders) + API.slash + userId);
+      try {
+        const response = await axios.get(
+          getAPIEndpoint(API.orders) + API.slash + userId
+        );
         setOrders(response.data);
       } catch (error) {
         console.log('Error fetching orders:', error);
@@ -65,8 +59,10 @@ const Orders: React.FC = ( ) => {
           <Text fontWeight="bold" mb={2}>
             Order Number: {order.orderNumber}
           </Text>
-          <Text mb={2}>Order Date: {new Date(order.orderDate).toLocaleString()}</Text>
-          {order.items.map((item) => (
+          <Text mb={2}>
+            Order Date: {new Date(order.orderDate).toLocaleString()}
+          </Text>
+          {order.items.map(item => (
             <Flex key={item.product_id} alignItems="center" my={2}>
               <Image
                 src={item.product_image_url}

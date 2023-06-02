@@ -22,7 +22,7 @@ class UserController {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   };
-  
+
 
   getUser: RequestHandler = async (req, res) => {
     try {
@@ -42,38 +42,6 @@ class UserController {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   }
-  
-  // createUser: RequestHandler = async (req, res) => {
-  //   try {
-  //     const { email } = req.body;
-
-  //     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-  //     if (!emailRegex.test(email)) {
-  //       res.status(400).json({ message: 'Invalid email format' });
-  //       return;
-  //     }
-
-  //     const existingUserQuery = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-
-  //     if (existingUserQuery.rows.length > 0) {
-  //       res.status(409).json({ message: 'User already exists' });
-  //     } else {
-  //       const newUserQuery = await db.query('INSERT INTO users (email) VALUES ($1) RETURNING *', [email]);
-  //       const newUser = newUserQuery.rows[0];
-  //       res.status(201).json(newUser);
-  //     }
-  //   } catch (error: any) {
-  //     console.error('Error creating user:', error);
-  //     if (error.constraint === 'users_email_check') {
-  //       res.status(400).json({ message: 'Invalid email format' });
-  //     }
-  //     else if (error.code === '23505') {
-  //       res.status(500).json({ message: `User with this email - ${req.body.email} already exists` });
-  //     } else {
-  //       res.status(500).json({ message: 'Internal Server Error' });
-  //     }
-  //   }
-  // }
 }
 
 export default UserController;

@@ -23,6 +23,7 @@ type Cart = {
   user_id: number;
 };
 
+
 class CartController {
 
   private getUpdatedCartData = async (cartId: number): Promise<CartData> => {

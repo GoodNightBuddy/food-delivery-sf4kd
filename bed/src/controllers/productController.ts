@@ -16,6 +16,7 @@ interface Product {
   product_image_url: string;
 }
 
+
 class ProductController {
   public getShops: RequestHandler = async (req, res) => {
     try {

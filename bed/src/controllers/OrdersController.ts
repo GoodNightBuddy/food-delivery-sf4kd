@@ -30,6 +30,7 @@ interface OrderData {
   total_price: number;
 }
 
+
 class OrdersController {
 
   public submitOrder: RequestHandler = async (req, res) => {

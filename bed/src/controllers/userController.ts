@@ -22,6 +22,7 @@ class UserController {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   };
+  
 
   getUser: RequestHandler = async (req, res) => {
     try {

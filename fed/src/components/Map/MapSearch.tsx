@@ -28,10 +28,15 @@ function MapSearch() {
     lat: 51.4982,
     lng: 31.28935,
   });
-  const [centerMarker, setCenterMarker] = useState<google.maps.Marker | null>(null);
+  const [centerMarker, setCenterMarker] = useState<google.maps.Marker | null>(
+    null
+  );
+  const [addressMarker, setAddressMarker] = useState<google.maps.Marker | null>(
+    null
+  );
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY || '',
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY!,
   });
 
   const shops = useAppSelector(state => state.shop.shops);
@@ -53,48 +58,47 @@ function MapSearch() {
         position: center,
         map: map,
       });
-  
-      setCenterMarker(centerMarker)
-    }
-  }, [map, center])
 
-  
+      setCenterMarker(centerMarker);
+    }
+  }, [map, center]);
 
   const searchAddressHandler = (event: React.FormEvent) => {
     event.preventDefault();
     const enteredAddress = addressInputRef.current?.value;
-    if (!enteredAddress) return;
+    if (!enteredAddress || !map) return;
     setIsLoading(true);
 
-    axios
-      .get<GoogleGeocodingResponse>(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-          enteredAddress!
-        )}&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}`
-      )
-      .then(response => {
-        if (response.data.status !== 'OK') {
-          throw new Error('Could not fetch location!');
-        }
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: enteredAddress }, function (results, status) {
+      if (status === 'OK' && results) {
+        const coordinates = results[0].geometry.location;
 
-        const coordinates = response.data.results[0].geometry.location;
-
-        setCenter(coordinates);
+        setCenter({
+          lat: coordinates.lat(),
+          lng: coordinates.lng(),
+        });
 
         if (map) {
-          const newMarker = new google.maps.Marker({
-            position: coordinates,
-            map: map,
-          });
+          if (addressMarker) {
+            setAddressMarker(marker => {
+              marker?.setPosition(coordinates);
+              return marker;
+            });
+          } else {
+            const newMarker = new google.maps.Marker({
+              position: coordinates,
+              map: map,
+            });
+            setAddressMarker(newMarker);
+          }
         }
-      })
-      .catch(err => {
-        alert(err.message);
-        console.log(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+
+      setIsLoading(false);
+    });
   };
 
   const onLoad = (mapInstance: google.maps.Map) => {

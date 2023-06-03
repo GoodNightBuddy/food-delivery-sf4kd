@@ -37,7 +37,7 @@ const CartPage: React.FC = () => {
   const [isNameValid, setNameValid] = useState(true);
 
   const userId = useAppSelector(state => state.auth.userId);
-  const shopId = useAppSelector(state => state.shop.shopId);
+  const currentShopId = useAppSelector(state => state.shop.currentShopId);
   const dispatch = useAppDispatch();
   const toast = useToast();
   const showToast = () => {
@@ -83,7 +83,7 @@ const CartPage: React.FC = () => {
         shipping_address,
         userId,
       });
-      dispatch(shopActionCreator.setShop(null));
+      dispatch(shopActionCreator.setCurrentShop(null));
       setFormData({
         contact_name: '',
         contact_email: '',
@@ -179,7 +179,7 @@ const CartPage: React.FC = () => {
               colorScheme="teal"
               size="sm"
               onClick={handleFormSubmit}
-              isDisabled={shopId === null} // ShopId is set only if there is product in the cart
+              isDisabled={currentShopId === null} // ShopId is set only if there is product in the cart
               mt={2}
               alignSelf="flex-end"
             >
@@ -188,7 +188,6 @@ const CartPage: React.FC = () => {
           </form>
           <Box mt={4}>
             <MapSearch />
-            {/* <Map center={{lat: 44, lng:-80}} zoom={10}/> */}
           </Box>
         </Box>
         <Box flex={3}>

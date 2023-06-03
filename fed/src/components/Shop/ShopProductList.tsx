@@ -38,8 +38,8 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const userId = useAppSelector(state => state.auth.userId);
-  const stateShopId = useAppSelector(state => state.shop.shopId);
-  const disabledBuying = !!stateShopId && shopId !== stateShopId;
+  const currentShopId = useAppSelector(state => state.shop.currentShopId);
+  const disabledBuying = !!currentShopId && shopId !== currentShopId;
   const dispatch = useAppDispatch();
   const toast = useToast();
   const showToast = () => {
@@ -96,8 +96,8 @@ const ShopProductList: React.FC<ShopProductListProps> = ({ shopId }) => {
           );
   
           // Set shop state for the first adding to cart
-          if (!stateShopId) {
-            dispatch(shopActionCreator.setShop(selectedProduct.shop_id));
+          if (!currentShopId) {
+            dispatch(shopActionCreator.setCurrentShop(selectedProduct.shop_id));
           }
         }
       } catch (error) {

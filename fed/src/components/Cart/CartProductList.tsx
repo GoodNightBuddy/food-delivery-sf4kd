@@ -40,7 +40,7 @@ const CartProductList: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const stateShopId = useAppSelector(state => state.shop.shopId);
+  const currentShopId = useAppSelector(state => state.shop.currentShopId);
   const userId = useAppSelector(state => state.auth.userId);
   const [showSkeletons, setShowSkeletons] = useState(false);
 
@@ -112,24 +112,24 @@ const CartProductList: React.FC = () => {
   );
 
   const handleRemoveFromCart = async (productId: number) => {
-      try {
-        const response = await axios.delete(getAPIEndpoint(API.cart), {
-          params: {
-            userId,
-            productId,
-          },
-        });
-        setCartItems(response.data.cart);
-        setTotalPrice(response.data.total_price);
-        // Set to null if there is no products in cart
-        if (stateShopId !== null && response.data.cart.length === 0) {
-          dispatch(shopActionCreator.setShop(null));
-        }
-      } catch (error) {
-        console.log('Error updating cart:', error);
-      } finally {
-        setLoading(false);
+    try {
+      const response = await axios.delete(getAPIEndpoint(API.cart), {
+        params: {
+          userId,
+          productId,
+        },
+      });
+      setCartItems(response.data.cart);
+      setTotalPrice(response.data.total_price);
+      // Set to null if there is no products in cart
+      if (currentShopId !== null && response.data.cart.length === 0) {
+        dispatch(shopActionCreator.setCurrentShop(null));
       }
+    } catch (error) {
+      console.log('Error updating cart:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -204,8 +204,8 @@ const CartProductList: React.FC = () => {
             />
           </Flex>
         ))}
-
-      {!showSkeletons && stateShopId && (
+      {/* Total price exists only if cart exists. If cart exists then currentShopId is set */}
+      {!showSkeletons && currentShopId && (
         <Flex justifyContent="space-between" alignItems="end" mt={4}>
           <Text>Total Price: ${totalPrice.toFixed(2)}</Text>
         </Flex>

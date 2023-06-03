@@ -1,21 +1,25 @@
 import { createReducer, isAnyOf } from "@reduxjs/toolkit";
-import { initShop, setShop } from "./actions";
+import { initCurrentShop, setCurrentShop, setShops } from "./actions";
+import { IShop } from "../types/types";
 
 type InitialState = {
-  shopId: null | number;
-  loading: boolean
+  currentShopId: null | number;
+  loading: boolean;
+  shops: IShop[];
 }
 
 const initialState: InitialState = {
-  shopId: null,
-  loading: false
+  currentShopId: null,
+  loading: false,
+  shops: []
 }
 const reducer = createReducer(initialState, (builder) => {
   builder
     .addMatcher(
       isAnyOf(
-        setShop.pending,
-        initShop.pending,
+        setCurrentShop.pending,
+        initCurrentShop.pending,
+        setShops.pending,
       ),
       state => {
         state.loading = true
@@ -24,23 +28,33 @@ const reducer = createReducer(initialState, (builder) => {
 
     .addMatcher(
       isAnyOf(
-        setShop.fulfilled,
-        initShop.fulfilled
+        setCurrentShop.fulfilled,
+        initCurrentShop.fulfilled
       ),
       (state, action) => {
         state.loading = false
-        state.shopId = action.payload.shopId
+        state.currentShopId = action.payload.currentShopId
       }
     )
 
     .addMatcher(
       isAnyOf(
-        setShop.rejected,
-        initShop.rejected
+        setShops.fulfilled,
       ),
       (state, action) => {
         state.loading = false
-        state.shopId = null
+        state.shops = action.payload.shops
+      }
+    )
+
+    .addMatcher(
+      isAnyOf(
+        setCurrentShop.rejected,
+        initCurrentShop.rejected
+      ),
+      (state, action) => {
+        state.loading = false
+        state.currentShopId = null
         alert(action.error.message)
       }
     )

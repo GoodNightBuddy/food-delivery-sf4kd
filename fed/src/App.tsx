@@ -20,6 +20,7 @@ export const App = () => {
 
   useEffect(() => {
     dispatch(authActionCreator.initUser());
+    dispatch(shopActionCreator.setShops());
   }, [dispatch]);
 
   const isLoading = useAppSelector(state => state.auth.loading);
@@ -27,7 +28,7 @@ export const App = () => {
 
   useEffect(() => {
     if(userId) {
-      dispatch(shopActionCreator.initShop(userId));
+      dispatch(shopActionCreator.initCurrentShop(userId));
     }
   }, [dispatch, userId]);
 

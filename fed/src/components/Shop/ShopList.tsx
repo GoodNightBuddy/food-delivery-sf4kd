@@ -1,26 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Text } from '@chakra-ui/react';
-import axios from 'axios';
-import { API, getAPIEndpoint } from '../../enums/API';
-
-interface IShop {
-  id: number;
-  name: string;
-  shop_image_url: string;
-}
+import { useAppSelector } from '../../store/types/types';
 
 interface ShopListProps {
   onItemClick: (shopId: number) => void;
 }
 
 const ShopList: React.FC<ShopListProps> = ({ onItemClick }) => {
-  const [shops, setShops] = useState<IShop[]>([]);
-
-  useEffect(() => {
-    axios.get(getAPIEndpoint(API.shops)).then((response) => {
-      setShops(response.data);
-    });
-  }, []);
+  const shops = useAppSelector(state => state.shop.shops);
 
   return (
     <Box flex={1}>

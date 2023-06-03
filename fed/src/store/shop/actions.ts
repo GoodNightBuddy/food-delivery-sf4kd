@@ -2,34 +2,46 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ActionType } from "./common";
 import axios from "axios";
 import { getAPIEndpoint, API } from "../../enums/API";
+import { IShop } from "../types/types";
 
-interface ShopResponse {
-  shopId: number | null;
+interface IShopResponse {
+  currentShopId: number | null;
 }
 
-const setShop = createAsyncThunk<ShopResponse, number | null>(
-  ActionType.SET_SHOP,
-  async (shopId) => {
-    if (shopId || shopId === null) {
-      return { shopId };
+interface IShopsRespone {
+  shops: IShop[]
+}
+
+const setCurrentShop = createAsyncThunk<IShopResponse, number | null>(
+  ActionType.SET_CURRENT_SHOP,
+  async (currentShopId) => {
+    if (currentShopId || currentShopId === null) {
+      return { currentShopId };
     } else {
       throw new Error("Invalid shopId"); // Throw an error if shopId is falsy
     }
   },
 );
 
-const initShop = createAsyncThunk<ShopResponse, number>(
-  ActionType.INIT_SHOP,
+const initCurrentShop = createAsyncThunk<IShopResponse, number>(
+  ActionType.INIT_CURRENT_SHOP,
   async (userId) => {
     const response = await axios.get(getAPIEndpoint(API.cart) + API.slash + userId);
 
     if (response.data?.cart?.length) {
-      return { shopId: response.data.cart[0].shop_id }
+      return { currentShopId: response.data.cart[0].shop_id }
     } else {
-      return { shopId: null }
+      return { currentShopId: null }
     }
   }
 );
 
+const setShops = createAsyncThunk<IShopsRespone, void>(
+  ActionType.SET_SHOPS,
+  async () => {
+    const response = await axios.get(getAPIEndpoint(API.shops));
+    return { shops: response.data }
+  },
+);
 
-export { setShop, initShop };
+export { setCurrentShop, initCurrentShop, setShops };

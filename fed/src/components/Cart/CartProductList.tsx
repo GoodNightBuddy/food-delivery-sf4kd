@@ -157,7 +157,7 @@ const CartProductList: React.FC = () => {
       )}
 
       {!showSkeletons && cartItems.length === 0 && (
-        <Alert status="info">
+        <Alert status="info" borderRadius={'md'}>
           <AlertIcon />
           Your shopping cart is empty
         </Alert>

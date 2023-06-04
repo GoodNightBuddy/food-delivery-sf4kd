@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Flex, Image, Text, Skeleton } from '@chakra-ui/react';
+import { Box, Flex, Image, Text, Skeleton, Alert, AlertIcon } from '@chakra-ui/react';
 import axios from 'axios';
 import { API, getAPIEndpoint } from '../../enums/API';
 import { useAppSelector } from '../../store/types/types';
@@ -54,6 +54,10 @@ const Orders: React.FC = () => {
 
   return (
     <Box>
+      {!orders.length && <Alert status="info" borderRadius={'md'}>
+          <AlertIcon />
+          You do not have  orders yet
+        </Alert>}
       {orders.map((order: IOrderItem) => (
         <Box key={order.orderNumber} p={4} borderBottom="1px solid gray">
           <Text fontWeight="bold" mb={2}>

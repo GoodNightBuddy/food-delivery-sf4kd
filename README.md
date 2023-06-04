@@ -55,6 +55,8 @@ Or, you can use 2 terminals. Go and execute **npm run start** from _fed_ folder 
 
 # About
 
+If you try to reload the page you will get 404 error. 
+
 You can buy products only from one shop. To buy products from another shop, you should remove previous shop products from cart. It was additional task requirement.
 
 Main technologies are: React, Redux, Chakra UI for client side and Express with PostgreSQL on the server. Both parts writed with Typescript.

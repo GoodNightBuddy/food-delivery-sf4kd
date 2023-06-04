@@ -1,10 +1,11 @@
 # folders
 node_modules
 dist
-fed/.env
 
 # files
 database.json
+fed/src/components/Map/Map.tsx
+fed/.env
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 

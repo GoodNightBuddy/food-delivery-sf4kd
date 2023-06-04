@@ -6,6 +6,8 @@ interface Shop {
   id: number;
   name: string;
   shop_image_url: string;
+  lat: number;
+  lng: number;
 }
 
 interface Product {
@@ -20,7 +22,7 @@ interface Product {
 class ProductController {
   public getShops: RequestHandler = async (req, res) => {
     try {
-      const shopsQuery: QueryResult<Shop> = await db.query('SELECT id, name, shop_image_url FROM shops');
+      const shopsQuery: QueryResult<Shop> = await db.query('SELECT id, name, shop_image_url, address FROM shops');
       const shops: Shop[] = shopsQuery.rows;
 
       res.status(200).json(shops);

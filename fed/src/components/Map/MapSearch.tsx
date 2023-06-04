@@ -1,8 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import axios from 'axios';
-import { Box, Button, FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { useAppSelector } from '../../store/types/types';
+import {
+  Autocomplete,
+  DirectionsRenderer,
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
+} from '@react-google-maps/api';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Text,
+} from '@chakra-ui/react';
+import { IShop, useAppSelector } from '../../store/types/types';
 
 const containerStyle = {
   width: '100%',
@@ -10,89 +22,71 @@ const containerStyle = {
   borderRadius: '0.375rem',
 };
 
-type Coordinates = {
-  lat: number;
-  lng: number;
-};
-
-type GoogleGeocodingResponse = {
-  results: { geometry: { location: Coordinates } }[];
-  status: 'OK' | 'ZERO_RESULTS';
-};
+type Libraries = Array<
+  'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
+>;
 
 function MapSearch() {
   const addressInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [center, setCenter] = useState<Coordinates>({
-    lat: 51.4982,
-    lng: 31.28935,
-  });
-  const [centerMarker, setCenterMarker] = useState<google.maps.Marker | null>(
-    null
-  );
-  const [addressMarker, setAddressMarker] = useState<google.maps.Marker | null>(
-    null
-  );
+  const [shop, setShop] = useState<IShop | null>(null);
+  const [libraries] = useState<Libraries>(['places']);
+  const [directions, setDirections] =
+    useState<google.maps.DirectionsResult | null>(null);
+  const [distance, setDistance] = useState('');
+  const [duration, setDuration] = useState('');
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY!,
+    libraries,
   });
 
   const shops = useAppSelector(state => state.shop.shops);
   const currentShopId = useAppSelector(state => state.shop.currentShopId);
 
   useEffect(() => {
-    if (currentShopId && shops.length) {
+    if (shops.length && currentShopId) {
       const currentShop = shops.find(shop => shop.id === currentShopId);
       if (currentShop) {
-        const { lat, lng } = currentShop;
-        setCenter({ lat: Number(lat), lng: Number(lng) });
+        setShop(currentShop);
       }
     }
   }, [currentShopId, shops]);
 
-  useEffect(() => {
-    if (map) {
-      const centerMarker = new google.maps.Marker({
-        position: center,
-        map: map,
-      });
-
-      setCenterMarker(centerMarker);
+  async function calculateRoute(origin: string, destination: string) {
+    if (!origin || !destination) {
+      return;
     }
-  }, [map, center]);
+
+    const directionsService = new google.maps.DirectionsService();
+    const results = await directionsService.route({
+      origin,
+      destination,
+      travelMode: google.maps.TravelMode.DRIVING,
+    });
+
+    setDirections(results);
+
+    if (results.routes[0].legs[0].distance?.text) {
+      setDistance(results.routes[0].legs[0].distance?.text);
+    }
+
+    if (results.routes[0].legs[0].duration?.text) {
+      setDuration(results.routes[0].legs[0].duration.text);
+    }
+  }
 
   const searchAddressHandler = (event: React.FormEvent) => {
     event.preventDefault();
     const enteredAddress = addressInputRef.current?.value;
-    if (!enteredAddress || !map) return;
+    if (!enteredAddress || !map || !shop) return;
     setIsLoading(true);
-
     const geocoder = new google.maps.Geocoder();
+
     geocoder.geocode({ address: enteredAddress }, function (results, status) {
       if (status === 'OK' && results) {
-        const coordinates = results[0].geometry.location;
-
-        setCenter({
-          lat: coordinates.lat(),
-          lng: coordinates.lng(),
-        });
-
-        if (map) {
-          if (addressMarker) {
-            setAddressMarker(marker => {
-              marker?.setPosition(coordinates);
-              return marker;
-            });
-          } else {
-            const newMarker = new google.maps.Marker({
-              position: coordinates,
-              map: map,
-            });
-            setAddressMarker(newMarker);
-          }
-        }
+        calculateRoute(shop.address, enteredAddress);
       } else {
         alert('Geocode was not successful for the following reason: ' + status);
       }
@@ -101,16 +95,14 @@ function MapSearch() {
     });
   };
 
-  const onLoad = (mapInstance: google.maps.Map) => {
-    setMap(mapInstance);
-  };
-
   return (
     <Box>
       <form onSubmit={searchAddressHandler}>
         <FormControl>
-          <FormLabel>Enter an address:</FormLabel>
-          <Input type="text" ref={addressInputRef} />
+          <FormLabel>Calculate approximate route from shop:</FormLabel>
+          {isLoaded && <Autocomplete>
+            <Input type="text" ref={addressInputRef} />
+          </Autocomplete>}
         </FormControl>
         <Button
           type="submit"
@@ -118,21 +110,42 @@ function MapSearch() {
           loadingText="Searching"
           mt={4}
         >
-          Search
+          Calculate route
         </Button>
+
+        {distance && duration && (
+          <Box mt={2}>
+            <Text>
+              Distance: {distance} | Duration: ~{duration} (driving)
+            </Text>
+          </Box>
+        )}
       </form>
       {isLoaded && (
         <Box id="map" borderRadius="md" mt={4}>
           <GoogleMap
             mapContainerStyle={containerStyle}
-            center={center}
+            center={{
+              lat: 49.84124,
+              lng: 24.02755,
+            }}
             zoom={15}
-            onLoad={onLoad}
+            onLoad={map => setMap(map)}
             options={{
               streetViewControl: false,
             }}
           >
-            {/* {marker && <Marker position={marker.getPosition()} />} */}
+            {directions && <DirectionsRenderer directions={directions} />}
+            {/* I don't know why this marker dissapears after first renders.
+            If I add the second marker, compiler rerenders app, and it is showed.
+            But if I reload the page, it disappears again. I can add the third and etc.
+            and it appear once, but then does not show... I have a couple of other problems, and i think
+            it because of newer React version. If I have done conspicuous mistake
+            I will be gladly to known about it:)*/}
+            {/* <Marker position={{
+              lat: 49.84124,
+              lng: 24.02755,
+            }} /> */}
           </GoogleMap>
         </Box>
       )}

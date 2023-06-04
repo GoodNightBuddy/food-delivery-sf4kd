@@ -2,9 +2,8 @@
 CREATE TABLE shops (
   id SERIAL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
-  shop_image_url VARCHAR(200),
-  lat NUMERIC(9, 6) NOT NULL,
-  lng NUMERIC(9, 6) NOT NULL
+  shop_image_url VARCHAR(200) NOT NULL,
+  address VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE products (
@@ -51,12 +50,12 @@ CREATE TABLE order_items (
 );
 
 -- Insert data into the 'shops' table
-INSERT INTO shops (name, shop_image_url, lat, lng)
+INSERT INTO shops (name, shop_image_url, address)
 VALUES
-  ('McDonalds', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png', 49.8397, 24.0297),
-  ('KFC', 'https://www.kfc-ukraine.com/admin/files/3190.svg', 49.8422, 24.0203),
-  ('Starbucks', 'https://upload.wikimedia.org/wikipedia/ru/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1200px-Starbucks_Corporation_Logo_2011.svg.png', 52.2297, 21.0122),
-  ('Burger King', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Burger_King_logo_%281999%29.svg/2024px-Burger_King_logo_%281999%29.svg.png', 52.23137, 21.01207);
+  ('McDonalds', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png', 'проспект Свободи, 35, Львів, Львівська область, 79000'),
+  ('KFC', 'https://www.kfc-ukraine.com/admin/files/3190.svg', 'проспект Свободи, 19, Львів, Львівська область, 79000'),
+  ('Starbucks', 'https://upload.wikimedia.org/wikipedia/ru/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1200px-Starbucks_Corporation_Logo_2011.svg.png', 'Emilii Plater 53, 00-113 Warszawa, Польша'),
+  ('Burger King', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Burger_King_logo_%281999%29.svg/2024px-Burger_King_logo_%281999%29.svg.png', 'Aleje Jerozolimskie 54 lok. N12-13-14, 00-495 Warszawa, Польша');
 
 INSERT INTO products (shop_id, price, product_name, product_image_url)
 VALUES

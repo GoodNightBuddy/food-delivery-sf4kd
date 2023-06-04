@@ -6,8 +6,7 @@ export interface IShop {
   id: number;
   name: string;
   shop_image_url: string;
-  lat: number;
-  lng: number;
+  address: string;
 }
 
 type RootState = ReturnType<typeof store.getState>;

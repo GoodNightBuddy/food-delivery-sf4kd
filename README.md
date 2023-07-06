@@ -55,7 +55,7 @@ Or, you can use 2 terminals. Go and execute **npm run start** from _fed_ folder 
 
 # About
 
-If you try to reload the page you will get 404 error. 
+Services, that host this app are free, so it causes some inconveniences. It need time for launching. Please, try to reload the page and wait up to ~40 seconds. Also, if you reload application it will redirect you to the "/shop" route. Thanks for understanding:)
 
 You can buy products only from one shop. To buy products from another shop, you should remove previous shop products from cart. It was additional task requirement.
 
